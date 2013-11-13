@@ -1,0 +1,6 @@
+*~
+*.swp
+
+/*.gem
+/.yardoc
+/doc
