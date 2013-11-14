@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
                 + %w{ active-dump.gemspec } \
                 + Dir['{lib,spec}/**/*.rb']
 
+  s.add_runtime_dependency 'activerecord'
   s.add_runtime_dependency 'rake'
 
   s.add_development_dependency 'rspec'

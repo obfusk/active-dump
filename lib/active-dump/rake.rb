@@ -24,14 +24,14 @@ module ActiveDump
     def self.define_tasks
       namespace :db do
         namespace :data do
-          desc 'dump $MODELS to $FILE'
+          desc 'Dump data'
           task :dump => :environment do
             m = ENV['MODELS']
-            c = ActiveDump.config ENV['FILE'], (m && m.split ',')
+            c = ActiveDump.config ENV['FILE'], (m && m.split(','))
             ActiveDump.dump c
           end
 
-          desc 'restore from $FILE'
+          desc 'Restore data'
           task :restore => :environment do
             c = ActiveDump.config ENV['FILE']
             ActiveDump.restore c

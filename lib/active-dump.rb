@@ -9,6 +9,7 @@
 #
 # --                                                            ; }}}1
 
+require 'active_record'
 require 'yaml'
 
 # namespace
@@ -22,10 +23,10 @@ module ActiveDump
 
   # dump to yaml
   def self.dump(c)                                              # {{{1
-    data = Hash[ c['models'].each do |m|
+    data = Hash[ c['models'].map do |m|
       model   = m.constantize
-      records = m.all.map(&:attributes)
-      [model, records]
+      records = model.all.map(&:attributes)
+      [m, records]
     end ]
     File.write c['file'], YAML.dump(data)
   end                                                           # }}}1
@@ -57,25 +58,26 @@ module ActiveDump
 
   # --
 
-  # get all existing models
+  # get all existing models' names
   def self.all_models                                           # {{{1
     return @models if @models
     eager_load!
     @models = ActiveRecord::Base.descendants.select do |m|
       (m.to_s != 'ActiveRecord::SchemaMigration') && \
        m.table_exists? && m.exists?
-    end
+    end .map(&:to_s)
   end                                                           # }}}1
 
   # configuration: file + models
   def self.config(file, models = nil)                           # {{{1
-    nb  = ->(x) -> { x && !x.blank? }
-    ne  = ->(x) -> { x && !x.empty? }
+    nb  = ->(x) { x && !x.blank? }
+    ne  = ->(x) { x && !x.empty? }
     c   = File.exists?(CFG_DUMP) ? YAML.load(File.read(CFG_DUMP)) : {}
     c['file']   = file        if nb[file]
     c['models'] = models      if ne[models]
     c['file']   = DUMP        unless nb[c['file']]
     c['models'] = all_models  unless ne[c['models']]
+    c
   end                                                           # }}}1
 
   # ActiveRecord connection
