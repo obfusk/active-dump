@@ -21,25 +21,37 @@ module ActiveDump
     extend ::Rake::DSL
 
     # define rake tasks
-    def self.define_tasks
+    def self.define_tasks                                       # {{{1
       namespace :db do
         namespace :data do
           desc 'Dump data'
           task :dump => :environment do
-            m = ENV['MODELS']
-            c = ActiveDump.config ENV['FILE'], (m && m.split(','))
-            ActiveDump.dump c
+            ActiveDump.dump cfg_from_env
           end
 
           desc 'Restore data'
           task :restore => :environment do
-            c = ActiveDump.config ENV['FILE']
-            ActiveDump.restore c
+            ActiveDump.restore cfg_from_env
+          end
+
+          desc 'Delete data'
+          task :delete => :environment do
+            ActiveDump.delete cfg_from_env
           end
         end
       end
-    end
+    end                                                         # }}}1
 
+    # get config from ENV
+    def self.cfg_from_env                                       # {{{1
+      f = ENV['FILE']   ; f2 = f && f.blank? ? nil : f
+      m = ENV['MODELS'] ; ms = m && m.split(',')
+      d = (ENV['DELETE'] ||'') =~ /yes|true/i
+      v = (ENV['VERBOSE']||'') =~ /yes|true/i
+      n = (ENV['DRYRUN'] ||'') =~ /yes|true/i
+      ActiveDump.config file: f2, models: ms, delete: d, verbose: v,
+        dryrun: n
+    end                                                         # }}}1
   end
 
 end

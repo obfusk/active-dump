@@ -22,38 +22,63 @@ module ActiveDump
   # --
 
   # dump to yaml
-  def self.dump(c)                                              # {{{1
-    data = Hash[ c['models'].map do |m|
-      model   = m.constantize
-      records = model.all.map(&:attributes)
+  def self.dump(cfg)                                            # {{{1
+    data = Hash[ cfg[:models].map do |m|
+      records = m.constantize.all.map(&:attributes)
+      printf "dumping model %-30s: %10d record(s)\n",
+        m, records.length if cfg[:verbose] or cfg[:dryrun]
       [m, records]
     end ]
-    File.write c['file'], YAML.dump(data)
+    File.write cfg[:file], YAML.dump(data) unless cfg[:dryrun]
   end                                                           # }}}1
 
-  # restore from yaml
-  def self.restore(c)                                           # {{{1
-    data = YAML.load File.read(c['file'])
+  # restore from yaml; optionally delete existing records first
+  def self.restore(cfg)                                         # {{{1
+    data = YAML.load File.read(cfg[:file])
     conn = connection
     ActiveRecord::Base.transaction do
       data.each do |m,records|
-        model = m.constantize
-        table = model.quoted_table_name
+        table = m.constantize.quoted_table_name
         records.each do |record|
           cols = record.keys.map { |k| conn.quote_column_name k }
           vals = record.values.map { |v| conn.quote v }
-          insert conn, table, cols, vals
+          delete_record conn, cfg, table, conn.quote(record['id']) \
+            if cfg[:delete]
+          insert_record conn, cfg, table, cols, vals
         end
+      end
+    end
+  end                                                           # }}}1
+
+  # delete all records
+  def self.delete(cfg)                                          # {{{1
+    conn = connection
+    ActiveRecord::Base.transaction do
+      cfg[:models].each do |m|
+        sql = "DELETE FROM #{m.constantize.quoted_table_name};"
+        execute conn, cfg, sql
       end
     end
   end                                                           # }}}1
 
   # --
 
+  # execute sql (optionally verbose)
+  def self.execute(conn, cfg, sql)
+    puts sql if cfg[:verbose] or cfg[:dryrun]
+    conn.execute sql unless cfg[:dryrun]
+  end
+
+  # delete record w/ id; make sure everything is quoted !!!
+  def self.delete_record(conn, cfg, table, id)
+    sql = "DELETE FROM #{table} WHERE id = #{id};"
+    execute conn, cfg, sql
+  end
+
   # insert data; make sure everything is quoted !!!
-  def self.insert(conn, table, cols, vals)
-    sql = "INSERT INTO #{table} (#{cols*','}) VALUES (#{vals*','})"
-    conn.execute sql
+  def self.insert_record(conn, cfg, table, cols, vals)
+    sql = "INSERT INTO #{table} (#{cols*','}) VALUES (#{vals*','});"
+    execute conn, cfg, sql
   end
 
   # --
@@ -68,16 +93,14 @@ module ActiveDump
     end .map(&:to_s)
   end                                                           # }}}1
 
-  # configuration: file + models
-  def self.config(file, models = nil)                           # {{{1
-    nb  = ->(x) { x && !x.blank? }
-    ne  = ->(x) { x && !x.empty? }
-    c   = File.exists?(CFG_DUMP) ? YAML.load(File.read(CFG_DUMP)) : {}
-    c['file']   = file        if nb[file]
-    c['models'] = models      if ne[models]
-    c['file']   = DUMP        unless nb[c['file']]
-    c['models'] = all_models  unless ne[c['models']]
-    c
+  # configuration
+  def self.config(cfg = {})                                     # {{{1
+    c1 = File.exists?(CFG_DUMP) ? YAML.load(File.read(CFG_DUMP)) : {}
+    c2 = Hash[ c1.map { |k,v| [k.to_sym, v] } ]
+    c3 = c2.merge cfg.reject { |k,v| v.nil? }
+    c4 = { file: DUMP } .merge c3.reject { |k,v| v.nil? }
+    c4[:models] && !c4[:models].empty? ? c4
+                                       : c4.merge(models: all_models)
   end                                                           # }}}1
 
   # ActiveRecord connection

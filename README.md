@@ -5,7 +5,7 @@
     Date        : 2013-11-13
 
     Copyright   : Copyright (C) 2013  Felix C. Stegerman
-    Version     : v0.0.1
+    Version     : v0.0.2
 
 []: }}}1
 
@@ -16,11 +16,12 @@
 
   active-dump - dump and restore activerecord from/to yaml
 
-  active-dump provides 2 rake tasks that allow you to dump and restore
+  active-dump provides 3 rake tasks that allow you to dump and restore
   activerecord data from/to yaml:
 
   * `rake db:data:dump` creates a yaml dump
   * `rake db:data:restore` restores a yaml dump
+  * `rake db:data:delete` deletes all records in database
 
 #
 
@@ -42,12 +43,16 @@ gem 'active-dump', require: 'active-dump/rails'
   * `FILE`: the file to dump to/restore from (defaults to
     `db/data.yml`)
   * `MODELS`: the models to dump (defaults to all models)
+  * `DELETE`: delete records with same id before restore (defaults to
+    false)
+  * `VERBOSE`: print info/sql (defaults to false)
+  * `DRYRUN`: don't do anything (defaults to false, implies `VERBOSE`)
 
 #
 
   Configuration files:
 
-  * `config/active-dump.yml`: the default file and models
+  * `config/active-dump.yml`: set defaults
   * `config/database.yml`: database connection
 
 []: }}}2
@@ -59,11 +64,14 @@ gem 'active-dump', require: 'active-dump/rails'
 
     $ rake db:data:dump MODELS=Foo,Bar
     $ RAILS_ENV=production rake db:data:load
+    $ rake db:data:restore DELETE=yes
+    $ rake db:data:delete   # CAREFUL!
 
 `config/active-dump.yml`:
 
 ```yaml
 file: db/dump.yml
+verbose: true
 models:
   - Cms::Block
   - Cms::Categorization
@@ -85,7 +93,7 @@ models:
 
 ## TODO
 
-  * specs/docs?
+  * specs! docs?
   * use model's database connection?!
   * ...
 
