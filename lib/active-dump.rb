@@ -2,7 +2,7 @@
 #
 # File        : active-dump.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2013-11-13
+# Date        : 2013-11-19
 #
 # Copyright   : Copyright (C) 2013  Felix C. Stegerman
 # Licence     : GPLv2 or EPLv1
@@ -117,9 +117,12 @@ module ActiveDump
   # eager_load! all rails engines' models (if Rails is defined)
   def self.eager_load!                                          # {{{1
     return false if @eager_load
-    Rails::Engine::Railties.engines.each do |e|
-      e.eager_load!
-    end if defined? Rails
+    if defined? ::Rails
+      ::Rails::Engine::Railties.engines.each do |e|
+        e.eager_load!
+      end
+      ::Rails.application.eager_load!
+    end
     @eager_load = true
   end                                                           # }}}1
 

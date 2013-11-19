@@ -2,7 +2,7 @@
 #
 # File        : active-dump/rails.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2013-11-13
+# Date        : 2013-11-19
 #
 # Copyright   : Copyright (C) 2013  Felix C. Stegerman
 # Licence     : GPLv2 or EPLv1
@@ -17,7 +17,7 @@ require 'active-dump/rake'
 module ActiveDump
 
   # railtie that adds the rake tasks
-  class Railtie < Rails::Railtie
+  class Railtie < ::Rails::Railtie
     rake_tasks { ActiveDump::Rake.define_tasks }
   end
 
