@@ -10,6 +10,7 @@
 # --                                                            ; }}}1
 
 require 'active_record'
+require 'erb'
 require 'yaml'
 
 # namespace
@@ -107,8 +108,8 @@ module ActiveDump
   # @todo use model?!
   def self.connection                                           # {{{1
     return @connection if @connection
-    unless ActiveRecord::Base.connected?
-      c = YAML.load File.read(CFG_DB)
+    unless (ActiveRecord::Base.connection rescue nil)
+      c = YAML.load ERB.new(File.read(CFG_DB)).result
       ActiveRecord::Base.establish_connection c[env]
     end
     @connection = ActiveRecord::Base.connection
