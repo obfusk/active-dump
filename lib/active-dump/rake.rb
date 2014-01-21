@@ -2,9 +2,9 @@
 #
 # File        : active-dump/rake.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2013-11-13
+# Date        : 2014-11-13
 #
-# Copyright   : Copyright (C) 2013  Felix C. Stegerman
+# Copyright   : Copyright (C) 2014  Felix C. Stegerman
 # Licence     : GPLv2 or EPLv1
 #
 # --                                                            ; }}}1
@@ -37,6 +37,11 @@ module ActiveDump
           desc 'Delete data'
           task :delete => :environment do
             ActiveDump.delete cfg_from_env
+          end
+
+          desc 'Fix sequences'
+          task :fix_seqs => :environment do
+            ActiveDump.fix_seqs cfg_from_env
           end
         end
       end

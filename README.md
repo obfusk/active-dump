@@ -2,10 +2,10 @@
 
     File        : README.md
     Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-    Date        : 2013-12-19
+    Date        : 2014-01-21
 
-    Copyright   : Copyright (C) 2013  Felix C. Stegerman
-    Version     : v0.2.1
+    Copyright   : Copyright (C) 2014  Felix C. Stegerman
+    Version     : v0.2.2
 
 []: }}}1
 
@@ -22,6 +22,7 @@
   * `rake db:data:dump` creates a yaml dump
   * `rake db:data:restore` restores a yaml dump
   * `rake db:data:delete` deletes all records in database
+  * `rake db:data:fix_seqs` fixes (postgresql) sequences
 
 #
 
@@ -63,7 +64,7 @@ gem 'active-dump', require: 'active-dump/rails'
 []: {{{1
 
     $ rake db:data:dump MODELS=Foo,Bar
-    $ RAILS_ENV=production rake db:data:load
+    $ RAILS_ENV=production rake db:data:restore
     $ rake db:data:restore DELETE=yes
     $ rake db:data:delete   # CAREFUL!
 

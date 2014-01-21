@@ -2,9 +2,9 @@
 #
 # File        : active-dump.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2013-11-19
+# Date        : 2014-01-21
 #
-# Copyright   : Copyright (C) 2013  Felix C. Stegerman
+# Copyright   : Copyright (C) 2014  Felix C. Stegerman
 # Licence     : GPLv2 or EPLv1
 #
 # --                                                            ; }}}1
@@ -57,6 +57,21 @@ module ActiveDump
     ActiveRecord::Base.transaction do
       cfg[:models].each do |m|
         sql = "DELETE FROM #{m.constantize.quoted_table_name};"
+        execute conn, cfg, sql
+      end
+    end
+  end                                                           # }}}1
+
+  # fix postgresql sequences
+  def self.fix_seqs(cfg)                                        # {{{1
+    conn = connection
+    ActiveRecord::Base.transaction do
+      cfg[:models].each do |m|
+        mod = m.constantize
+        seq = conn.quote_table_name mod.sequence_name
+        max = mod.all.max_by(&:id)
+        n   = (max ? max.id : 0) + 1;
+        sql = "ALTER SEQUENCE #{seq} RESTART WITH #{n};"
         execute conn, cfg, sql
       end
     end
