@@ -2,7 +2,7 @@
 
     File        : README.md
     Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-    Date        : 2014-01-21
+    Date        : 2014-08-12
 
     Copyright   : Copyright (C) 2014  Felix C. Stegerman
     Version     : v0.2.2
@@ -100,16 +100,13 @@ models:
 
 ## License
 
-  GPLv2 [1] or EPLv1 [2].
+  LGPLv3+ [1].
 
 ## References
 []: {{{1
 
-  [1] GNU General Public License, version 2
-  --- http://www.opensource.org/licenses/GPL-2.0
-
-  [2] Eclipse Public License, version 1
-  --- http://www.opensource.org/licenses/EPL-1.0
+  [1] GNU Lesser General Public License, version 3
+  --- http://www.gnu.org/licenses/lgpl-3.0.html
 
 []: }}}1
 

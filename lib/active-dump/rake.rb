@@ -2,10 +2,10 @@
 #
 # File        : active-dump/rake.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2014-11-13
+# Date        : 2014-08-12
 #
 # Copyright   : Copyright (C) 2014  Felix C. Stegerman
-# Licence     : GPLv2 or EPLv1
+# Licence     : LGPLv3+
 #
 # --                                                            ; }}}1
 

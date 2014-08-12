@@ -2,10 +2,10 @@
 #
 # File        : active-dump/rails.rb
 # Maintainer  : Felix C. Stegerman <flx@obfusk.net>
-# Date        : 2013-11-19
+# Date        : 2013-08-12
 #
 # Copyright   : Copyright (C) 2013  Felix C. Stegerman
-# Licence     : GPLv2 or EPLv1
+# Licence     : LGPLv3+
 #
 # --                                                            ; }}}1
 
