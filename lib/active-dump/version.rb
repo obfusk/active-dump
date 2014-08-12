@@ -1,4 +1,4 @@
 module ActiveDump
-  VERSION = '0.2.2'
-  DATE    = '2014-01-21'
+  VERSION = '0.2.3'
+  DATE    = '2014-08-12'
 end
