@@ -18,19 +18,29 @@ module ActiveDump
 
   CFG_DB    = 'config/database.yml'
   CFG_DUMP  = 'config/active-dump.yml'
-  DUMP      = 'db/data.yml'
+  FOLDER    = 'db/data/'
 
   # --
 
   # dump to yaml
   def self.dump(cfg)                                            # {{{1
-    data = Hash[ cfg[:models].map do |m|
+    data = cfg[:models].each do |m|
       records = m.constantize.all.map(&:attributes)
-      printf "dumping model %-30s: %10d record(s)\n",
-        m, records.length if cfg[:verbose] or cfg[:dryrun]
-      [m, records]
-    end ]
-    File.write cfg[:file], YAML.dump(data) unless cfg[:dryrun]
+      data = [m, records]
+
+      if cfg[:verbose] or cfg[:dryrun]
+        printf(
+          "dumping model %-30s: %10d record(s)\n",
+          m, records.length
+        )
+      end
+
+      unless cfg[:dryrun]
+        file_name = "#{m.parameterize}.yaml"
+        file_path = File.join(cfg[:folder], file_name)
+        IO.write(file_path, YAML.dump(data))
+      end
+    end
   end                                                           # }}}1
 
   # restore from yaml; optionally delete existing records first
@@ -114,7 +124,7 @@ module ActiveDump
     c1 = File.exists?(CFG_DUMP) ? YAML.load(File.read(CFG_DUMP)) : {}
     c2 = Hash[ c1.map { |k,v| [k.to_sym, v] } ]
     c3 = c2.merge cfg.reject { |k,v| v.nil? }
-    c4 = { file: DUMP } .merge c3.reject { |k,v| v.nil? }
+    c4 = { folder: FOLDER } .merge c3.reject { |k,v| v.nil? }
     c4[:models] && !c4[:models].empty? ? c4
                                        : c4.merge(models: all_models)
   end                                                           # }}}1
